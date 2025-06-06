@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">PharmaCare</string>
+    <!-- Pharmacy Products -->
+    <string name="paracetamol">Paracetamol 500mg</string>
+    <string name="ibuprofen">Ibuprofen 400mg</string>
+    <string name="amoxicillin">Amoxicillin 250mg</string>
+    <string name="vitamin_c">Vitamin C 1000mg</string>
+    <string name="omeprazole">Omeprazole 20mg</string>
+    <string name="cetirizine">Cetirizine 10mg</string>
+    <string name="multivitamin">Daily Multivitamin</string>
+    <string name="aspirin">Aspirin 75mg</string>
+    <string name="calcium">Calcium + D3</string>
+    <string name="cough_syrup">Cough Syrup 100ml</string>
+    <string name="bandage">Medical Bandage</string>
+    <string name="thermometer">Digital Thermometer</string>
+    
+    <!-- Prices -->
+    <string name="lkr_250">LKR 250</string>
+    <string name="lkr_350">LKR 350</string>
+    <string name="lkr_750">LKR 750</string>
+    <string name="lkr_680">LKR 680</string>
+    <string name="lkr_950">LKR 950</string>
+    <string name="lkr_420">LKR 420</string>
+    <string name="lkr_1200">LKR 1,200</string>
+    <string name="lkr_180">LKR 180</string>
+    <string name="lkr_850">LKR 850</string>
+    <string name="lkr_320">LKR 320</string>
+    <string name="lkr_150">LKR 150</string>
+</resources>
