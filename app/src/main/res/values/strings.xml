@@ -1,29 +1,29 @@
 <resources>
-    <string name="app_name">PharmaCare</string>
-    <!-- Pharmacy Products -->
-    <string name="paracetamol">Paracetamol 500mg</string>
-    <string name="ibuprofen">Ibuprofen 400mg</string>
-    <string name="amoxicillin">Amoxicillin 250mg</string>
-    <string name="vitamin_c">Vitamin C 1000mg</string>
-    <string name="omeprazole">Omeprazole 20mg</string>
-    <string name="cetirizine">Cetirizine 10mg</string>
-    <string name="multivitamin">Daily Multivitamin</string>
-    <string name="aspirin">Aspirin 75mg</string>
-    <string name="calcium">Calcium + D3</string>
-    <string name="cough_syrup">Cough Syrup 100ml</string>
-    <string name="bandage">Medical Bandage</string>
-    <string name="thermometer">Digital Thermometer</string>
+    <string name="app_name">DealHunter</string>
+    <!-- Deals and Offers -->
+    <string name="electronics_deal">Electronics Flash Sale</string>
+    <string name="fashion_deal">Fashion Mega Deal</string>
+    <string name="home_deal">Home and Garden Offers</string>
+    <string name="beauty_deal">Beauty and Skincare</string>
+    <string name="sports_deal">Sports Equipment Sale</string>
+    <string name="books_deal">Books and Media Deals</string>
+    <string name="grocery_deal">Grocery Super Saver</string>
+    <string name="travel_deal">Travel and Hotels</string>
+    <string name="restaurant_deal">Food n Dining</string>
+    <string name="tech_deal">Tech Gadgets Sale</string>
+    <string name="automotive_deal">Auto Parts and Accessories</string>
+    <string name="health_deal">Health and Wellness</string>
     
-    <!-- Prices -->
-    <string name="lkr_250">LKR 250</string>
-    <string name="lkr_350">LKR 350</string>
-    <string name="lkr_750">LKR 750</string>
-    <string name="lkr_680">LKR 680</string>
-    <string name="lkr_950">LKR 950</string>
-    <string name="lkr_420">LKR 420</string>
-    <string name="lkr_1200">LKR 1,200</string>
-    <string name="lkr_180">LKR 180</string>
-    <string name="lkr_850">LKR 850</string>
-    <string name="lkr_320">LKR 320</string>
-    <string name="lkr_150">LKR 150</string>
+    <!-- Discount Prices -->
+    <string name="save_250">Save $25</string>
+    <string name="save_350">Save $35</string>
+    <string name="save_750">Save $75</string>
+    <string name="save_680">Save $68</string>
+    <string name="save_950">Save $95</string>
+    <string name="save_420">Save $42</string>
+    <string name="save_1200">Save $120</string>
+    <string name="save_180">Save $18</string>
+    <string name="save_850">Save $85</string>
+    <string name="save_320">Save $32</string>
+    <string name="save_150">Save $15</string>
 </resources>

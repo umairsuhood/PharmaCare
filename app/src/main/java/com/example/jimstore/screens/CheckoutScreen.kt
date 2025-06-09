@@ -8,9 +8,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -21,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.jimstore.R
+import com.example.jimstore.model.CartItem
 import com.example.jimstore.ui.theme.*
 import com.example.jimstore.viewmodel.CartViewModel
 import kotlinx.coroutines.delay
@@ -40,14 +44,16 @@ fun CheckoutScreen(
     cartViewModel: CartViewModel
 ) {
     val cartItems by cartViewModel.cartItems.collectAsState()
+    val subtotal by cartViewModel.subtotal.collectAsState()
+    val deliveryFee by cartViewModel.deliveryFee.collectAsState()
+    val discount by cartViewModel.discount.collectAsState()
     val total by cartViewModel.total.collectAsState()
     
     var customerName by remember { mutableStateOf("") }
+    var customerEmail by remember { mutableStateOf("") }
     var customerPhone by remember { mutableStateOf("") }
-    var customerAddress by remember { mutableStateOf("") }
-    var selectedPaymentMethod by remember { mutableStateOf("Cash on Delivery") }
-    var isOrderPlaced by remember { mutableStateOf(false) }
-    var showSuccessDialog by remember { mutableStateOf(false) }
+    var deliveryAddress by remember { mutableStateOf("") }
+    var selectedPaymentMethod by remember { mutableStateOf("Credit Card") }
     var isPlaceOrderPressed by remember { mutableStateOf(false) }
     
     val placeOrderScale by animateFloatAsState(
@@ -67,11 +73,11 @@ fun CheckoutScreen(
                 .padding(bottom = 80.dp)
         ) {
             item {
-                // Top Bar with Pharmacy Styling
+                // Top Bar with Deal Branding
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = PharmacyBluePrimary
+                        containerColor = DealOrangePrimary
                     ),
                     shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)
                 ) {
@@ -108,14 +114,25 @@ fun CheckoutScreen(
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.ShoppingCart,
+                                    contentDescription = "Checkout",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = "Checkout",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp,
                                 color = Color.White
                             )
+                            }
                             Text(
-                                text = "Complete your order",
+                                text = "Complete your deal purchase",
                                 fontSize = 14.sp,
                                 color = Color.White.copy(alpha = 0.8f)
                             )
@@ -135,8 +152,8 @@ fun CheckoutScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    imageVector = Icons.Filled.Place,
-                                    contentDescription = "Pharmacy",
+                                    imageVector = Icons.Filled.LocalOffer,
+                                    contentDescription = "Deals",
                                     tint = Color.White,
                                     modifier = Modifier.size(20.dp)
                                 )
@@ -175,7 +192,7 @@ fun CheckoutScreen(
                                     modifier = Modifier.size(36.dp),
                                     shape = CircleShape,
                                     colors = CardDefaults.cardColors(
-                                        containerColor = PharmacyGreenAccent.copy(alpha = 0.2f)
+                                        containerColor = DealPurpleAccent.copy(alpha = 0.2f)
                                     )
                                 ) {
                                     Box(
@@ -185,7 +202,7 @@ fun CheckoutScreen(
                                         Icon(
                                             imageVector = Icons.Filled.ShoppingCart,
                                             contentDescription = "Order Items",
-                                            tint = PharmacyGreenAccent,
+                                            tint = DealPurpleAccent,
                                             modifier = Modifier.size(20.dp)
                                         )
                                     }
@@ -195,13 +212,13 @@ fun CheckoutScreen(
                                 
                                 Column {
                                     Text(
-                                        text = "Order Items",
+                                        text = "Deal Items",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 18.sp,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
-                                        text = "${cartItems.sumOf { it.quantity }} items",
+                                        text = "${cartItems.sumOf { it.quantity }} items • ${cartItems.size} deals",
                                         fontSize = 14.sp,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -224,7 +241,39 @@ fun CheckoutScreen(
                                 if (index < cartItems.size - 1) {
                                     Divider(
                                         modifier = Modifier.padding(vertical = 12.dp),
-                                        color = PharmacyLightGray
+                                        color = DealLightGray
+                                    )
+                                }
+                            }
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            // Savings highlight
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = DealSuccess.copy(alpha = 0.1f)
+                                ),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Percent,
+                                        contentDescription = "Savings",
+                                        tint = DealSuccess,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "You're saving $${discount.toInt()} on this order!",
+                                        fontSize = 14.sp,
+                                        color = DealSuccess,
+                                        fontWeight = FontWeight.Medium
                                     )
                                 }
                             }
@@ -242,10 +291,10 @@ fun CheckoutScreen(
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = "LKR ${total.toInt()}",
+                                    text = "$${total.toInt()}",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 18.sp,
-                                    color = PharmacyBluePrimary
+                                    color = DealOrangePrimary
                                 )
                             }
                         }
@@ -284,7 +333,7 @@ fun CheckoutScreen(
                                     modifier = Modifier.size(36.dp),
                                     shape = CircleShape,
                                     colors = CardDefaults.cardColors(
-                                        containerColor = PharmacyBluePrimary.copy(alpha = 0.2f)
+                                        containerColor = DealOrangePrimary.copy(alpha = 0.2f)
                                     )
                                 ) {
                                     Box(
@@ -294,7 +343,7 @@ fun CheckoutScreen(
                                         Icon(
                                             imageVector = Icons.Filled.Person,
                                             contentDescription = "Customer Info",
-                                            tint = PharmacyBluePrimary,
+                                            tint = DealOrangePrimary,
                                             modifier = Modifier.size(20.dp)
                                         )
                                     }
@@ -312,6 +361,7 @@ fun CheckoutScreen(
                             
                             Spacer(modifier = Modifier.height(20.dp))
                             
+                            // Customer Name
                             OutlinedTextField(
                                 value = customerName,
                                 onValueChange = { customerName = it },
@@ -320,20 +370,44 @@ fun CheckoutScreen(
                                     Icon(
                                         imageVector = Icons.Filled.Person,
                                         contentDescription = "Name",
-                                        tint = PharmacyBluePrimary
+                                        tint = DealOrangePrimary
                                     )
                                 },
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = PharmacyBluePrimary,
-                                    focusedLabelColor = PharmacyBluePrimary,
-                                    cursorColor = PharmacyBluePrimary
+                                    focusedBorderColor = DealOrangePrimary,
+                                    focusedLabelColor = DealOrangePrimary,
+                                    cursorColor = DealOrangePrimary
                                 )
                             )
                             
                             Spacer(modifier = Modifier.height(16.dp))
                             
+                            // Customer Email
+                            OutlinedTextField(
+                                value = customerEmail,
+                                onValueChange = { customerEmail = it },
+                                label = { Text("Email Address") },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Filled.Email,
+                                        contentDescription = "Email",
+                                        tint = DealOrangePrimary
+                                    )
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = DealOrangePrimary,
+                                    focusedLabelColor = DealOrangePrimary,
+                                    cursorColor = DealOrangePrimary
+                                )
+                            )
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            // Customer Phone
                             OutlinedTextField(
                                 value = customerPhone,
                                 onValueChange = { customerPhone = it },
@@ -342,40 +416,15 @@ fun CheckoutScreen(
                                     Icon(
                                         imageVector = Icons.Filled.Phone,
                                         contentDescription = "Phone",
-                                        tint = PharmacyBluePrimary
+                                        tint = DealOrangePrimary
                                     )
                                 },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = PharmacyBluePrimary,
-                                    focusedLabelColor = PharmacyBluePrimary,
-                                    cursorColor = PharmacyBluePrimary
-                                )
-                            )
-                            
-                            Spacer(modifier = Modifier.height(16.dp))
-                            
-                            OutlinedTextField(
-                                value = customerAddress,
-                                onValueChange = { customerAddress = it },
-                                label = { Text("Delivery Address") },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Filled.LocationOn,
-                                        contentDescription = "Address",
-                                        tint = PharmacyBluePrimary
-                                    )
-                                },
-                                minLines = 2,
-                                maxLines = 3,
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = PharmacyBluePrimary,
-                                    focusedLabelColor = PharmacyBluePrimary,
-                                    cursorColor = PharmacyBluePrimary
+                                    focusedBorderColor = DealOrangePrimary,
+                                    focusedLabelColor = DealOrangePrimary,
+                                    cursorColor = DealOrangePrimary
                                 )
                             )
                         }
@@ -386,7 +435,7 @@ fun CheckoutScreen(
             }
 
             item {
-                // Payment Method Section
+                // Delivery Information Section
                 AnimatedVisibility(
                     visible = true,
                     enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(
@@ -414,7 +463,7 @@ fun CheckoutScreen(
                                     modifier = Modifier.size(36.dp),
                                     shape = CircleShape,
                                     colors = CardDefaults.cardColors(
-                                        containerColor = PharmacyGreenAccent.copy(alpha = 0.2f)
+                                        containerColor = DealPurpleAccent.copy(alpha = 0.2f)
                                     )
                                 ) {
                                     Box(
@@ -422,9 +471,164 @@ fun CheckoutScreen(
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Icon(
-                                            imageVector = Icons.Filled.AccountBox,
+                                            imageVector = Icons.Filled.LocalShipping,
+                                            contentDescription = "Delivery",
+                                            tint = DealPurpleAccent,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                }
+                                
+                                Spacer(modifier = Modifier.width(12.dp))
+                                
+                                Text(
+                                    text = "Delivery Information",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                            
+                            Spacer(modifier = Modifier.height(20.dp))
+                            
+                            // Delivery Address
+                            OutlinedTextField(
+                                value = deliveryAddress,
+                                onValueChange = { deliveryAddress = it },
+                                label = { Text("Delivery Address") },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Filled.Place,
+                                        contentDescription = "Address",
+                                        tint = DealPurpleAccent
+                                    )
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = DealPurpleAccent,
+                                    focusedLabelColor = DealPurpleAccent,
+                                    cursorColor = DealPurpleAccent
+                                ),
+                                minLines = 2,
+                                maxLines = 3
+                            )
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            // Delivery Options
+                            Text(
+                                text = "Delivery Options",
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            
+                            Spacer(modifier = Modifier.height(12.dp))
+                            
+                            val deliveryOptions = listOf(
+                                Triple("Standard Delivery", "2-3 business days", "FREE"),
+                                Triple("Express Delivery", "Next business day", "$9.99"),
+                                Triple("Same Day Delivery", "Within 4 hours", "$19.99")
+                            )
+                            
+                            deliveryOptions.forEach { (title, subtitle, price) ->
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = DealOrangePrimary.copy(alpha = 0.1f)
+                                    ),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(
+                                                text = title,
+                                                fontWeight = FontWeight.Medium,
+                                                fontSize = 14.sp,
+                                                color = MaterialTheme.colorScheme.onSurface
+                                            )
+                                            Text(
+                                                text = subtitle,
+                                                fontSize = 12.sp,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                        
+                                        Text(
+                                            text = price,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 14.sp,
+                                            color = if (price == "FREE") DealSuccess else DealOrangePrimary
+                                        )
+                                        
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        
+                                        RadioButton(
+                                            selected = title == "Standard Delivery",
+                                            onClick = { /* Handle selection */ },
+                                            colors = RadioButtonDefaults.colors(
+                                                selectedColor = DealOrangePrimary
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+            item {
+                // Payment Method Section
+                AnimatedVisibility(
+                    visible = true,
+                    enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(
+                        animationSpec = tween(400, delayMillis = 300)
+                    ),
+                    exit = slideOutVertically() + fadeOut()
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Card(
+                                    modifier = Modifier.size(36.dp),
+                                    shape = CircleShape,
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = DealSuccess.copy(alpha = 0.2f)
+                                    )
+                                ) {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Payment,
                                             contentDescription = "Payment",
-                                            tint = PharmacyGreenAccent,
+                                            tint = DealSuccess,
                                             modifier = Modifier.size(20.dp)
                                         )
                                     }
@@ -440,29 +644,30 @@ fun CheckoutScreen(
                                 )
                             }
                             
-                            Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(20.dp))
                             
                             val paymentMethods = listOf(
-                                "Cash on Delivery" to Icons.Filled.Money,
-                                "Credit Card" to Icons.Filled.CreditCard,
-                                "Digital Wallet" to Icons.Filled.Wallet
+                                Triple("Credit Card", Icons.Filled.CreditCard, "Visa, Mastercard, Amex"),
+                                Triple("Digital Wallet", Icons.Filled.AccountBalanceWallet, "PayPal, Apple Pay, Google Pay"),
+                                Triple("Cash on Delivery", Icons.Filled.LocalAtm, "Pay when you receive")
                             )
                             
-                            paymentMethods.forEach { (method, icon) ->
+                            paymentMethods.forEach { (method, icon, description) ->
                                 Card(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .clickable { selectedPaymentMethod = method },
-                                    shape = RoundedCornerShape(12.dp),
+                                        .padding(vertical = 4.dp)
+                                        .selectable(
+                                            selected = selectedPaymentMethod == method,
+                                            onClick = { selectedPaymentMethod = method }
+                                        ),
                                     colors = CardDefaults.cardColors(
                                         containerColor = if (selectedPaymentMethod == method) 
-                                            PharmacyBluePrimary.copy(alpha = 0.1f) 
+                                            DealOrangePrimary.copy(alpha = 0.1f) 
                                         else 
-                                            PharmacyLightGray.copy(alpha = 0.3f)
+                                            MaterialTheme.colorScheme.surfaceVariant
                                     ),
-                                    elevation = CardDefaults.cardElevation(
-                                        defaultElevation = if (selectedPaymentMethod == method) 4.dp else 0.dp
-                                    )
+                                    shape = RoundedCornerShape(12.dp)
                                 ) {
                                     Row(
                                         modifier = Modifier
@@ -470,104 +675,167 @@ fun CheckoutScreen(
                                             .padding(16.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        RadioButton(
-                                            selected = selectedPaymentMethod == method,
-                                            onClick = { selectedPaymentMethod = method },
-                                            colors = RadioButtonDefaults.colors(
-                                                selectedColor = PharmacyBluePrimary
-                                            )
-                                        )
-                                        
-                                        Spacer(modifier = Modifier.width(12.dp))
-                                        
                                         Icon(
                                             imageVector = icon,
                                             contentDescription = method,
                                             tint = if (selectedPaymentMethod == method) 
-                                                PharmacyBluePrimary 
+                                                DealOrangePrimary 
                                             else 
                                                 MaterialTheme.colorScheme.onSurfaceVariant,
-                                            modifier = Modifier.size(20.dp)
+                                            modifier = Modifier.size(24.dp)
                                         )
                                         
                                         Spacer(modifier = Modifier.width(12.dp))
                                         
+                                        Column(modifier = Modifier.weight(1f)) {
                                         Text(
                                             text = method,
-                                            color = if (selectedPaymentMethod == method) 
-                                                PharmacyBluePrimary 
-                                            else 
-                                                MaterialTheme.colorScheme.onSurface,
-                                            fontWeight = if (selectedPaymentMethod == method) 
-                                                FontWeight.Bold 
-                                            else 
-                                                FontWeight.Normal
+                                                fontWeight = FontWeight.Medium,
+                                                fontSize = 14.sp,
+                                                color = MaterialTheme.colorScheme.onSurface
+                                            )
+                                            Text(
+                                                text = description,
+                                                fontSize = 12.sp,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                        
+                                        RadioButton(
+                                            selected = selectedPaymentMethod == method,
+                                            onClick = { selectedPaymentMethod = method },
+                                            colors = RadioButtonDefaults.colors(
+                                                selectedColor = DealOrangePrimary
+                                            )
                                         )
                                     }
                                 }
-                                
-                                Spacer(modifier = Modifier.height(8.dp))
                             }
                         }
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(120.dp))
+                Spacer(modifier = Modifier.height(20.dp))
             }
-        }
 
-        // Place Order Button
+            item {
+                // Order Summary Section
         AnimatedVisibility(
             visible = true,
-            enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-            exit = slideOutVertically() + fadeOut(),
-            modifier = Modifier.align(Alignment.BottomCenter)
+                    enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(
+                        animationSpec = tween(400, delayMillis = 400)
+                    ),
+                    exit = slideOutVertically() + fadeOut()
         ) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                            .padding(horizontal = 16.dp),
+                        shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 16.dp)
+                            containerColor = DealSuccess.copy(alpha = 0.1f)
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp)
+                        ) {
+                            Text(
+                                text = "Order Summary",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            OrderSummaryRow("Subtotal", "$${subtotal.toInt()}")
+                            OrderSummaryRow("Discount", "-$${discount.toInt()}", DealSuccess)
+                            OrderSummaryRow("Delivery", if (deliveryFee > 0) "$${deliveryFee.toInt()}" else "FREE")
+                            
+                            Divider(
+                                modifier = Modifier.padding(vertical = 12.dp),
+                                color = DealLightGray
+                            )
+                            
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Total",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = "$${total.toInt()}",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp,
+                                    color = DealOrangePrimary
+                                )
+                            }
+                        }
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+            item {
+                // Place Order Button
+                AnimatedVisibility(
+                    visible = true,
+                    enter = slideInVertically(initialOffsetY = { it }) + fadeIn(
+                        animationSpec = tween(400, delayMillis = 500)
+                    ),
+                    exit = slideOutVertically() + fadeOut()
             ) {
                 Button(
                     onClick = {
-                        if (customerName.isNotBlank() && customerPhone.isNotBlank() && customerAddress.isNotBlank()) {
                             isPlaceOrderPressed = true
-                            showSuccessDialog = true
-                            cartViewModel.clearCart()
-                        }
+                            // Handle order placement
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(20.dp)
+                            .padding(horizontal = 16.dp)
                         .height(56.dp)
                         .scale(placeOrderScale),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = PharmacyGreenAccent,
-                        disabledContainerColor = PharmacyMidGray
-                    ),
-                    enabled = customerName.isNotBlank() && customerPhone.isNotBlank() && customerAddress.isNotBlank()
+                            containerColor = DealSuccess
+                        )
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.CheckCircle,
+                                imageVector = Icons.Filled.ShoppingCart,
                         contentDescription = "Place Order",
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
-                    Spacer(modifier = Modifier.width(12.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Place Order - LKR ${total.toInt()}",
-                        color = Color.White,
+                                text = "Complete Deal Purchase - $${total.toInt()}",
+                                fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
-                    )
+                                color = Color.White
+                            )
+                        }
+                    }
                 }
+                
+                Spacer(modifier = Modifier.height(20.dp))
             }
+        }
+
+        // Bottom Navigation Bar
+        BottomNavBar(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            navController = navController,
+            cartViewModel = cartViewModel
+        )
         }
         
         LaunchedEffect(isPlaceOrderPressed) {
@@ -575,102 +843,32 @@ fun CheckoutScreen(
                 delay(150)
                 isPlaceOrderPressed = false
             }
-        }
-    }
-
-    // Success Dialog
-    if (showSuccessDialog) {
-        AlertDialog(
-            onDismissRequest = { 
-                showSuccessDialog = false
-                navController.navigate("home") {
-                    popUpTo("home") { inclusive = false }
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showSuccessDialog = false
-                        navController.navigate("home") {
-                            popUpTo("home") { inclusive = false }
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = PharmacyGreenAccent
-                    )
-                ) {
-                    Text("Continue Shopping", color = Color.White)
-                }
-            },
-            title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.CheckCircle,
-                        contentDescription = "Success",
-                        tint = PharmacyGreenAccent,
-                        modifier = Modifier.size(28.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Order Placed Successfully!",
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-            },
-            text = {
-                Column {
-                    Text(
-                        text = "Thank you for your order! Your medicines will be delivered to your address within 2-3 business days.",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Order ID: #PH${System.currentTimeMillis().toString().takeLast(6)}",
-                        fontWeight = FontWeight.Medium,
-                        color = PharmacyBluePrimary
-                    )
-                }
-            },
-            shape = RoundedCornerShape(16.dp),
-            containerColor = MaterialTheme.colorScheme.surface
-        )
     }
 }
 
 @Composable
-private fun CheckoutItemRow(item: com.example.jimstore.model.CartItem) {
+private fun CheckoutItemRow(item: CartItem) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Product Image
         Card(
-            modifier = Modifier.size(50.dp),
-            shape = RoundedCornerShape(10.dp),
+            modifier = Modifier.size(60.dp),
+            shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(
-                containerColor = PharmacyLightGray
+                containerColor = DealLightGray
             )
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.radialGradient(
-                            colors = listOf(
-                                Color.White,
-                                PharmacyLightGray
-                            )
-                        )
-                    ),
+                modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
                     painter = painterResource(id = item.product.imageRes),
                     contentDescription = stringResource(id = item.product.nameRes),
-                    modifier = Modifier.size(35.dp)
+                    modifier = Modifier.size(40.dp),
+                    contentScale = ContentScale.Fit
                 )
             }
         }
@@ -685,21 +883,79 @@ private fun CheckoutItemRow(item: com.example.jimstore.model.CartItem) {
                 text = stringResource(id = item.product.nameRes),
                 fontWeight = FontWeight.Medium,
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 2
             )
+            
+            Spacer(modifier = Modifier.height(4.dp))
+            
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
             Text(
-                text = "Qty: ${item.quantity} | Weight: ${item.selectedWeight}kg",
+                    text = "Qty: ${item.quantity}",
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+                Spacer(modifier = Modifier.width(8.dp))
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = DealHot
+                    ),
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Text(
+                        text = "50% OFF",
+                        color = Color.White,
+                        fontSize = 8.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                    )
+                }
+            }
         }
         
         // Price
+        Column(
+            horizontalAlignment = Alignment.End
+        ) {
+            Text(
+                text = "$${(item.quantity * 49.99).toInt()}",
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                color = DealOrangePrimary
+            )
+            Text(
+                text = "$${(item.quantity * 99.99).toInt()}",
+                fontSize = 12.sp,
+                color = DealDarkGray,
+                textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
+            )
+        }
+    }
+}
+
+@Composable
+private fun OrderSummaryRow(
+    label: String,
+    value: String,
+    valueColor: Color = MaterialTheme.colorScheme.onSurface
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
         Text(
-            text = "LKR ${(item.product.price * item.quantity).toInt()}",
-            fontWeight = FontWeight.Bold,
+            text = label,
             fontSize = 14.sp,
-            color = PharmacyBluePrimary
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            text = value,
+            fontSize = 14.sp,
+            color = valueColor,
+            fontWeight = FontWeight.Medium
         )
     }
+    Spacer(modifier = Modifier.height(8.dp))
 } 

@@ -69,8 +69,8 @@ fun SignUpScreen(
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        PharmacyGreenAccent,
-                        PharmacyGreenAccent.copy(alpha = 0.8f),
+                        DealPurpleAccent,
+                        DealPurpleAccent.copy(alpha = 0.8f),
                         MaterialTheme.colorScheme.background
                     )
                 )
@@ -94,7 +94,7 @@ fun SignUpScreen(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Logo with medical background
+                    // Logo with deal background
                     Card(
                         modifier = Modifier
                             .size(120.dp)
@@ -112,23 +112,23 @@ fun SignUpScreen(
                                     Brush.radialGradient(
                                         colors = listOf(
                                             Color.White,
-                                            PharmacyLightGray.copy(alpha = 0.3f)
+                                            DealLightGray.copy(alpha = 0.3f)
                                         )
                                     )
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
-                            // Medical plus background
+                            // Deal percent background
                             Icon(
-                                imageVector = Icons.Filled.Add,
-                                contentDescription = "Medical",
-                                tint = PharmacyGreenAccent.copy(alpha = 0.1f),
+                                imageVector = Icons.Filled.Percent,
+                                contentDescription = "Deals",
+                                tint = DealPurpleAccent.copy(alpha = 0.1f),
                                 modifier = Modifier.size(80.dp)
                             )
                             
                             Image(
                                 painter = painterResource(id = R.drawable.logo),
-                                contentDescription = "PharmaCare Logo",
+                                contentDescription = "DealHunter Logo",
                                 contentScale = ContentScale.Fit,
                                 modifier = Modifier.size(60.dp)
                             )
@@ -139,7 +139,7 @@ fun SignUpScreen(
                     
                     // App name and registration message
                     Text(
-                        text = "Join PharmaCare",
+                        text = "Join DealHunter",
                         fontWeight = FontWeight.Bold,
                         fontSize = 28.sp,
                         color = Color.White,
@@ -147,7 +147,7 @@ fun SignUpScreen(
                     )
                     
                     Text(
-                        text = "Create your health account today",
+                        text = "Start saving money with exclusive deals",
                         fontSize = 16.sp,
                         color = Color.White.copy(alpha = 0.8f),
                         textAlign = TextAlign.Center,
@@ -175,7 +175,7 @@ fun SignUpScreen(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Fast delivery • Prescription tracking • Health reminders",
+                                text = "Flash sales • Price alerts • Cashback rewards",
                                 fontSize = 12.sp,
                                 color = Color.White.copy(alpha = 0.9f),
                                 textAlign = TextAlign.Center
@@ -213,43 +213,47 @@ fun SignUpScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.PersonAdd,
-                                contentDescription = "Register",
-                                tint = PharmacyGreenAccent,
+                                contentDescription = "Sign Up",
+                                tint = DealPurpleAccent,
                                 modifier = Modifier.size(24.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Create Account",
+                                text = "Create Your Account",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                         
-                        Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        Text(
+                            text = "Join thousands of smart shoppers",
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
+                        )
+                        
+                        Spacer(modifier = Modifier.height(32.dp))
                         
                         // Full Name field
                         OutlinedTextField(
                             value = fullName,
                             onValueChange = { fullName = it },
                             label = { Text("Full Name") },
-                            placeholder = { Text("Enter your full name") },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Filled.Person,
                                     contentDescription = "Name",
-                                    tint = PharmacyGreenAccent
+                                    tint = DealPurpleAccent
                                 )
                             },
-                            singleLine = true,
-                            shape = RoundedCornerShape(16.dp),
                             modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PharmacyGreenAccent,
-                                focusedLabelColor = PharmacyGreenAccent,
-                                cursorColor = PharmacyGreenAccent,
-                                unfocusedContainerColor = PharmacyLightGray.copy(alpha = 0.3f),
-                                focusedContainerColor = PharmacyLightGray.copy(alpha = 0.2f)
+                                focusedBorderColor = DealPurpleAccent,
+                                focusedLabelColor = DealPurpleAccent
                             )
                         )
                         
@@ -260,23 +264,18 @@ fun SignUpScreen(
                             value = email,
                             onValueChange = { email = it },
                             label = { Text("Email Address") },
-                            placeholder = { Text("Enter your email") },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Filled.Email,
                                     contentDescription = "Email",
-                                    tint = PharmacyGreenAccent
+                                    tint = DealPurpleAccent
                                 )
                             },
-                            singleLine = true,
-                            shape = RoundedCornerShape(16.dp),
                             modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PharmacyGreenAccent,
-                                focusedLabelColor = PharmacyGreenAccent,
-                                cursorColor = PharmacyGreenAccent,
-                                unfocusedContainerColor = PharmacyLightGray.copy(alpha = 0.3f),
-                                focusedContainerColor = PharmacyLightGray.copy(alpha = 0.2f)
+                                focusedBorderColor = DealPurpleAccent,
+                                focusedLabelColor = DealPurpleAccent
                             )
                         )
                         
@@ -287,23 +286,18 @@ fun SignUpScreen(
                             value = phone,
                             onValueChange = { phone = it },
                             label = { Text("Phone Number") },
-                            placeholder = { Text("Enter your phone number") },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Filled.Phone,
                                     contentDescription = "Phone",
-                                    tint = PharmacyGreenAccent
+                                    tint = DealPurpleAccent
                                 )
                             },
-                            singleLine = true,
-                            shape = RoundedCornerShape(16.dp),
                             modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PharmacyGreenAccent,
-                                focusedLabelColor = PharmacyGreenAccent,
-                                cursorColor = PharmacyGreenAccent,
-                                unfocusedContainerColor = PharmacyLightGray.copy(alpha = 0.3f),
-                                focusedContainerColor = PharmacyLightGray.copy(alpha = 0.2f)
+                                focusedBorderColor = DealPurpleAccent,
+                                focusedLabelColor = DealPurpleAccent
                             )
                         )
                         
@@ -314,12 +308,11 @@ fun SignUpScreen(
                             value = password,
                             onValueChange = { password = it },
                             label = { Text("Password") },
-                            placeholder = { Text("Create a strong password") },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Filled.Lock,
                                     contentDescription = "Password",
-                                    tint = PharmacyGreenAccent
+                                    tint = DealPurpleAccent
                                 )
                             },
                             trailingIcon = {
@@ -329,20 +322,16 @@ fun SignUpScreen(
                                     Icon(
                                         imageVector = if (isPasswordVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
                                         contentDescription = if (isPasswordVisible) "Hide password" else "Show password",
-                                        tint = PharmacyGreenAccent
+                                        tint = DealDarkGray
                                     )
                                 }
                             },
-                            singleLine = true,
                             visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                            shape = RoundedCornerShape(16.dp),
                             modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PharmacyGreenAccent,
-                                focusedLabelColor = PharmacyGreenAccent,
-                                cursorColor = PharmacyGreenAccent,
-                                unfocusedContainerColor = PharmacyLightGray.copy(alpha = 0.3f),
-                                focusedContainerColor = PharmacyLightGray.copy(alpha = 0.2f)
+                                focusedBorderColor = DealPurpleAccent,
+                                focusedLabelColor = DealPurpleAccent
                             )
                         )
                         
@@ -353,12 +342,11 @@ fun SignUpScreen(
                             value = confirmPassword,
                             onValueChange = { confirmPassword = it },
                             label = { Text("Confirm Password") },
-                            placeholder = { Text("Re-enter your password") },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Filled.LockClock,
+                                    imageVector = Icons.Filled.LockOpen,
                                     contentDescription = "Confirm Password",
-                                    tint = PharmacyGreenAccent
+                                    tint = DealPurpleAccent
                                 )
                             },
                             trailingIcon = {
@@ -368,26 +356,22 @@ fun SignUpScreen(
                                     Icon(
                                         imageVector = if (isConfirmPasswordVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
                                         contentDescription = if (isConfirmPasswordVisible) "Hide password" else "Show password",
-                                        tint = PharmacyGreenAccent
+                                        tint = DealDarkGray
                                     )
                                 }
                             },
-                            singleLine = true,
                             visualTransformation = if (isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                            shape = RoundedCornerShape(16.dp),
                             modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PharmacyGreenAccent,
-                                focusedLabelColor = PharmacyGreenAccent,
-                                cursorColor = PharmacyGreenAccent,
-                                unfocusedContainerColor = PharmacyLightGray.copy(alpha = 0.3f),
-                                focusedContainerColor = PharmacyLightGray.copy(alpha = 0.2f)
+                                focusedBorderColor = DealPurpleAccent,
+                                focusedLabelColor = DealPurpleAccent
                             )
                         )
                         
                         Spacer(modifier = Modifier.height(20.dp))
                         
-                        // Terms and conditions checkbox
+                        // Terms and conditions
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
@@ -396,28 +380,25 @@ fun SignUpScreen(
                                 checked = agreeToTerms,
                                 onCheckedChange = { agreeToTerms = it },
                                 colors = CheckboxDefaults.colors(
-                                    checkedColor = PharmacyGreenAccent
+                                    checkedColor = DealPurpleAccent
                                 )
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "I agree to the Terms of Service and Privacy Policy",
-                                fontSize = 14.sp,
+                                text = "I agree to the Terms & Conditions and Privacy Policy",
+                                fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.clickable { agreeToTerms = !agreeToTerms }
                             )
                         }
                         
-                        Spacer(modifier = Modifier.height(28.dp))
+                        Spacer(modifier = Modifier.height(32.dp))
                         
-                        // Sign Up button
+                        // Sign up button
                         Button(
                             onClick = {
-                                if (agreeToTerms && fullName.isNotBlank() && email.isNotBlank() && 
-                                    phone.isNotBlank() && password.isNotBlank() && password == confirmPassword) {
-                                    isSignUpPressed = true
-                                    onSignUpSuccess()
-                                }
+                                isSignUpPressed = true
+                                onSignUpSuccess()
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -425,231 +406,171 @@ fun SignUpScreen(
                                 .scale(signUpScale),
                             shape = RoundedCornerShape(16.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = PharmacyBluePrimary,
-                                disabledContainerColor = PharmacyMidGray
+                                containerColor = DealPurpleAccent
                             ),
-                            elevation = ButtonDefaults.buttonElevation(
-                                defaultElevation = 8.dp,
-                                pressedElevation = 4.dp
-                            ),
-                            enabled = agreeToTerms && fullName.isNotBlank() && email.isNotBlank() && 
-                                     phone.isNotBlank() && password.isNotBlank() && password == confirmPassword
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.PersonAdd,
-                                contentDescription = "Sign Up",
-                                tint = Color.White,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "Create Account",
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
-                            )
-                        }
-                        
-                        Spacer(modifier = Modifier.height(24.dp))
-                        
-                        // Login Prompt within signup form
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = PharmacyLightGray.copy(alpha = 0.3f)
-                            )
+                            enabled = agreeToTerms
                         ) {
                             Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                                    .clickable { onLoginClick() },
-                                horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    imageVector = Icons.Filled.Login,
-                                    contentDescription = "Login",
-                                    tint = PharmacyGreenAccent,
+                                    imageVector = Icons.Filled.ShoppingBag,
+                                    contentDescription = "Join",
+                                    tint = Color.White,
                                     modifier = Modifier.size(20.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "Already have an account? ",
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = 14.sp
-                                )
-                                Text(
-                                    text = "Sign In Here",
-                                    color = PharmacyGreenAccent,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Icon(
-                                    imageVector = Icons.Filled.ArrowForward,
-                                    contentDescription = "Go to Sign In",
-                                    tint = PharmacyGreenAccent,
-                                    modifier = Modifier.size(16.dp)
+                                    text = "Start Deal Hunting",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
                                 )
                             }
                         }
                         
                         Spacer(modifier = Modifier.height(24.dp))
-
-                        // Health benefits info
-                        Card(
+                        
+                        // Divider
+                        Row(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = PharmacyLightGray.copy(alpha = 0.3f)
-                            )
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column(
-                                modifier = Modifier.padding(16.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = "Account Benefits",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 14.sp,
-                                    color = MaterialTheme.colorScheme.onSurface
+                            Divider(modifier = Modifier.weight(1f))
+                            Text(
+                                text = "  OR  ",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 12.sp
+                            )
+                            Divider(modifier = Modifier.weight(1f))
+                        }
+                        
+                        Spacer(modifier = Modifier.height(24.dp))
+                        
+                        // Social signup buttons
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            // Google signup
+                            OutlinedButton(
+                                onClick = { },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(12.dp),
+                                border = ButtonDefaults.outlinedButtonBorder.copy(
+                                    brush = Brush.linearGradient(
+                                        colors = listOf(DealPurpleAccent, DealOrangePrimary)
+                                    )
                                 )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceEvenly
-                                ) {
-                                    BenefitItem(
-                                        icon = Icons.Filled.LocalShipping,
-                                        text = "Fast\nDelivery"
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.AccountCircle,
+                                    contentDescription = "Google",
+                                    tint = DealPurpleAccent,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Google",
+                                    color = DealPurpleAccent,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                            
+                            Spacer(modifier = Modifier.width(12.dp))
+                            
+                            // Facebook signup
+                            OutlinedButton(
+                                onClick = { },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(12.dp),
+                                border = ButtonDefaults.outlinedButtonBorder.copy(
+                                    brush = Brush.linearGradient(
+                                        colors = listOf(DealOrangePrimary, DealPurpleAccent)
                                     )
-                                    BenefitItem(
-                                        icon = Icons.Filled.History,
-                                        text = "Order\nHistory"
-                                    )
-                                    BenefitItem(
-                                        icon = Icons.Filled.Notifications,
-                                        text = "Medicine\nReminders"
-                                    )
-                                    BenefitItem(
-                                        icon = Icons.Filled.LocalOffer,
-                                        text = "Special\nOffers"
-                                    )
-                                }
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Facebook,
+                                    contentDescription = "Facebook",
+                                    tint = DealOrangePrimary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Facebook",
+                                    color = DealOrangePrimary,
+                                    fontWeight = FontWeight.Medium
+                                )
                             }
                         }
                     }
                 }
             }
             
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
             
-            // Login link
+            // Login prompt
             AnimatedVisibility(
                 visible = true,
-                enter = slideInVertically(initialOffsetY = { it }) + fadeIn(
-                    animationSpec = tween(600, delayMillis = 400)
-                ),
-                exit = slideOutVertically() + fadeOut()
+                enter = fadeIn(animationSpec = tween(800, delayMillis = 400)),
+                exit = fadeOut()
             ) {
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color.White.copy(alpha = 0.1f)
-                    )
+                        containerColor = Color.White.copy(alpha = 0.9f)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp)
-                            .clickable { onLoginClick() },
-                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.padding(20.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "Already have an account? ",
-                            color = Color.White.copy(alpha = 0.8f),
-                            fontSize = 14.sp
-                        )
-                        Text(
-                            text = "Sign In",
-                            color = Color.White,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
                         Icon(
-                            imageVector = Icons.Filled.ArrowForward,
-                            contentDescription = "Sign In",
-                            tint = Color.White,
-                            modifier = Modifier.size(16.dp)
+                            imageVector = Icons.Filled.Login,
+                            contentDescription = "Login",
+                            tint = DealPurpleAccent,
+                            modifier = Modifier.size(24.dp)
                         )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "Already have an account?",
+                                fontSize = 14.sp,
+                                color = DealCharcoal,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Text(
+                                text = "Sign in to access your saved deals",
+                                fontSize = 12.sp,
+                                color = DealDarkGray
+                            )
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        TextButton(
+                            onClick = onLoginClick,
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = DealPurpleAccent
+                            )
+                        ) {
+                            Text(
+                                text = "Sign In",
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
             }
             
             Spacer(modifier = Modifier.height(40.dp))
         }
-        
-        LaunchedEffect(isSignUpPressed) {
-            if (isSignUpPressed) {
-                delay(150)
-                isSignUpPressed = false
-            }
-        }
-    }
-}
-
-@Composable
-private fun BenefitItem(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    text: String
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Card(
-            modifier = Modifier.size(40.dp),
-            shape = CircleShape,
-            colors = CardDefaults.cardColors(
-                containerColor = PharmacyBluePrimary.copy(alpha = 0.2f)
-            )
-        ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = text,
-                    tint = PharmacyBluePrimary,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        }
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        Text(
-            text = text,
-            fontSize = 10.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Medium,
-            lineHeight = 12.sp
-        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun SignUpScreenPreview() {
-    JimStoreTheme {
-        SignUpScreen()
-    }
+    SignUpScreen()
 }
 

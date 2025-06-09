@@ -6,6 +6,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -13,8 +15,13 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.LocalOffer
+import androidx.compose.material.icons.filled.Percent
+import androidx.compose.material.icons.filled.LocalShipping
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,9 +30,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -63,11 +72,11 @@ fun CartScreen(
                 .fillMaxSize()
                 .padding(bottom = 80.dp)
         ) {
-            // Top Bar with Pharmacy Styling
+            // Top Bar with Deal Branding
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = PharmacyBluePrimary
+                    containerColor = DealOrangePrimary
                 ),
                 shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)
             ) {
@@ -104,15 +113,26 @@ fun CartScreen(
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(
-                            text = "Shopping Cart",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            color = Color.White
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.ShoppingCart,
+                                contentDescription = "Cart",
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "My Cart",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp,
+                                color = Color.White
+                            )
+                        }
                         if (cartItems.isNotEmpty()) {
                             Text(
-                                text = "${cartItems.sumOf { it.quantity }} items",
+                                text = "${cartItems.sumOf { it.quantity }} items • ${cartItems.size} deals",
                                 fontSize = 14.sp,
                                 color = Color.White.copy(alpha = 0.8f)
                             )
@@ -148,7 +168,7 @@ fun CartScreen(
                             modifier = Modifier.size(120.dp),
                             shape = CircleShape,
                             colors = CardDefaults.cardColors(
-                                containerColor = PharmacyLightGray
+                                containerColor = DealLightGray
                             )
                         ) {
                             Box(
@@ -158,7 +178,7 @@ fun CartScreen(
                                 Icon(
                                     imageVector = Icons.Filled.ShoppingCart,
                                     contentDescription = "Empty Cart",
-                                    tint = PharmacyBluePrimary,
+                                    tint = DealOrangePrimary,
                                     modifier = Modifier.size(60.dp)
                                 )
                             }
@@ -174,9 +194,10 @@ fun CartScreen(
                         )
                         
                         Text(
-                            text = "Add some medicines to get started",
+                            text = "Add some amazing deals to get started",
                             fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
                         )
                         
                         Spacer(modifier = Modifier.height(32.dp))
@@ -184,192 +205,338 @@ fun CartScreen(
                         Button(
                             onClick = { navController.navigate("home") },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = PharmacyBluePrimary
+                                containerColor = DealOrangePrimary
                             ),
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(50.dp)
                         ) {
-                            Text(
-                                text = "Continue Shopping",
-                                color = Color.White,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.LocalOffer,
+                                    contentDescription = "Deals",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Start Deal Hunting",
+                                    color = Color.White,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
                     }
                 }
             } else {
-                // Cart Items
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(horizontal = 16.dp, vertical = 16.dp)
+                // Cart items list
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    cartItems.forEachIndexed { index, cartItem ->
-                        AnimatedVisibility(
-                            visible = true,
-                            enter = slideInHorizontally(
-                                initialOffsetX = { it },
-                                animationSpec = tween(300, delayMillis = index * 50)
-                            ) + fadeIn(),
-                            exit = slideOutHorizontally() + fadeOut()
+                    // Savings banner
+                    item {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = DealSuccess.copy(alpha = 0.1f)
+                            ),
+                            shape = RoundedCornerShape(12.dp)
                         ) {
-                            CartItemRow(
-                                item = cartItem,
-                                onIncrease = {
-                                    cartViewModel.updateQuantity(cartItem, cartItem.quantity + 1)
-                                },
-                                onDecrease = {
-                                    cartViewModel.updateQuantity(cartItem, cartItem.quantity - 1)
-                                },
-                                onDelete = {
-                                    cartViewModel.removeFromCart(cartItem)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Percent,
+                                    contentDescription = "Savings",
+                                    tint = DealSuccess,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column {
+                                    Text(
+                                        text = "🎉 You're saving big!",
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Text(
+                                        text = "Total savings: $${discount.toInt()}",
+                                        fontSize = 12.sp,
+                                        color = DealSuccess,
+                                        fontWeight = FontWeight.Medium
+                                    )
                                 }
-                            )
+                            }
                         }
-                        Spacer(modifier = Modifier.height(12.dp))
+                    }
+                    
+                    items(cartItems) { cartItem ->
+                        DealCartItemCard(
+                            cartItem = cartItem,
+                            onQuantityChange = { newQuantity ->
+                                cartViewModel.updateQuantity(cartItem, newQuantity)
+                            },
+                            onRemove = {
+                                cartViewModel.removeFromCart(cartItem)
+                            }
+                        )
+                    }
+                    
+                    // Recommended deals section
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = DealPurpleAccent.copy(alpha = 0.1f)
+                            ),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Star,
+                                        contentDescription = "Recommended",
+                                        tint = DealPurpleAccent,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "✨ You might also like",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                                
+                                Spacer(modifier = Modifier.height(12.dp))
+                                
+                                Text(
+                                    text = "Add more items to get free shipping on orders over $50!",
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                
+                                Spacer(modifier = Modifier.height(12.dp))
+                                
+                                TextButton(
+                                    onClick = { navController.navigate("products") },
+                                    colors = ButtonDefaults.textButtonColors(
+                                        contentColor = DealPurpleAccent
+                                    )
+                                ) {
+                                    Text(
+                                        text = "Browse More Deals",
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
-
-                // Order Summary
+                
+                // Order summary and checkout
                 Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     ),
+                    shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
-                    Column(modifier = Modifier.padding(20.dp)) {
+                    Column(
+                        modifier = Modifier.padding(24.dp)
+                    ) {
                         Text(
                             text = "Order Summary",
-                            fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         
                         Spacer(modifier = Modifier.height(16.dp))
                         
-                        SummaryRow("Items", "${cartItems.sumOf { it.quantity }}")
-                        SummaryRow("Subtotal", "LKR ${subtotal.toInt()}")
-                        SummaryRow("Discount", "LKR ${discount.toInt()}")
-                        SummaryRow("Delivery Charges", "LKR ${deliveryFee.toInt()}")
-                        
-                        Divider(
-                            modifier = Modifier.padding(vertical = 16.dp),
-                            color = PharmacyMidGray
-                        )
-                        
+                        // Subtotal
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "Total",
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = 18.sp
+                                text = "Subtotal",
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = "LKR ${total.toInt()}",
-                                fontWeight = FontWeight.Bold,
-                                color = PharmacyBluePrimary,
-                                fontSize = 18.sp
+                                text = "$${subtotal.toInt()}",
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
-                    }
-                }
-
-                // Check Out Button
-                Button(
-                    onClick = { 
-                        isCheckoutPressed = true
-                        navController.navigate("checkout")
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .height(56.dp)
-                        .scale(checkoutScale),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = PharmacyGreenAccent
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ShoppingCart,
-                        contentDescription = "Checkout",
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Proceed to Checkout",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
-                    )
-                }
-                
-                LaunchedEffect(isCheckoutPressed) {
-                    if (isCheckoutPressed) {
-                        delay(150)
-                        isCheckoutPressed = false
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        // Discount
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Discount",
+                                fontSize = 14.sp,
+                                color = DealSuccess
+                            )
+                            Text(
+                                text = "-$${discount.toInt()}",
+                                fontSize = 14.sp,
+                                color = DealSuccess,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        // Delivery
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.LocalShipping,
+                                    contentDescription = "Delivery",
+                                    tint = DealOrangePrimary,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "Delivery",
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Text(
+                                text = if (deliveryFee > 0) "$${deliveryFee.toInt()}" else "FREE",
+                                fontSize = 14.sp,
+                                color = if (deliveryFee > 0) MaterialTheme.colorScheme.onSurface else DealSuccess,
+                                fontWeight = if (deliveryFee == 0.0) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.height(12.dp))
+                        
+                        Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                        
+                        Spacer(modifier = Modifier.height(12.dp))
+                        
+                        // Total
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Total",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "$${total.toInt()}",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = DealOrangePrimary
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.height(20.dp))
+                        
+                        // Checkout button
+                        Button(
+                            onClick = {
+                                isCheckoutPressed = true
+                                navController.navigate("checkout")
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                                .scale(checkoutScale),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = DealOrangePrimary
+                            ),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.ShoppingCart,
+                                    contentDescription = "Checkout",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Proceed to Checkout",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
-        
+
+        // Bottom Navigation Bar
         BottomNavBar(
             modifier = Modifier.align(Alignment.BottomCenter),
             navController = navController,
             cartViewModel = cartViewModel
         )
     }
-}
-
-@Composable
-private fun SummaryRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = label,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontSize = 14.sp
-        )
-        Text(
-            text = value,
-            color = MaterialTheme.colorScheme.onSurface,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium
-        )
-    }
-    Spacer(modifier = Modifier.height(8.dp))
-}
-
-@Composable
-private fun CartItemRow(
-    item: CartItem,
-    onIncrease: () -> Unit,
-    onDecrease: () -> Unit,
-    onDelete: () -> Unit
-) {
-    var isDeletePressed by remember { mutableStateOf(false) }
-    val deleteScale by animateFloatAsState(
-        targetValue = if (isDeletePressed) 0.8f else 1f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-        label = "delete"
-    )
     
+    LaunchedEffect(isCheckoutPressed) {
+        if (isCheckoutPressed) {
+            delay(100)
+            isCheckoutPressed = false
+        }
+    }
+}
+
+@Composable
+fun DealCartItemCard(
+    cartItem: CartItem,
+    onQuantityChange: (Int) -> Unit,
+    onRemove: () -> Unit
+) {
+    var isRemoving by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isRemoving) 0.8f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "removeScale"
+    )
+
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .scale(scale),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -384,29 +551,39 @@ private fun CartItemRow(
         ) {
             // Product Image
             Card(
-                modifier = Modifier.size(70.dp),
+                modifier = Modifier.size(80.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = PharmacyLightGray
+                    containerColor = DealLightGray
                 )
             ) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.radialGradient(
-                                colors = listOf(
-                                    Color.White,
-                                    PharmacyLightGray
-                                )
-                            )
-                        ),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = painterResource(id = item.product.imageRes),
-                        contentDescription = stringResource(id = item.product.nameRes),
-                        modifier = Modifier.size(50.dp)
+                        painter = painterResource(id = cartItem.product.imageRes),
+                        contentDescription = stringResource(id = cartItem.product.nameRes),
+                        modifier = Modifier.size(60.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+                
+                // Discount badge
+                Card(
+                    modifier = Modifier
+                        .padding(4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = DealHot
+                    ),
+                    shape = RoundedCornerShape(6.dp)
+                ) {
+                    Text(
+                        text = "50%",
+                        color = Color.White,
+                        fontSize = 8.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
                     )
                 }
             }
@@ -418,99 +595,119 @@ private fun CartItemRow(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = stringResource(id = item.product.nameRes),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "LKR ${item.product.price.toInt()}",
-                    color = PharmacyBluePrimary,
+                    text = stringResource(id = cartItem.product.nameRes),
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 2
                 )
-                Text(
-                    text = "Weight: ${item.selectedWeight}kg",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = 12.sp
-                )
-            }
-            
-            // Quantity Controls
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Card(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clickable { onDecrease() },
-                    shape = CircleShape,
-                    colors = CardDefaults.cardColors(
-                        containerColor = PharmacyLightGray
-                    )
+                
+                Spacer(modifier = Modifier.height(4.dp))
+                
+                // Price with discount
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.KeyboardArrowDown,
-                            contentDescription = "Decrease",
-                            tint = PharmacyBluePrimary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
+                    Text(
+                        text = "$${(19..99).random()}.99",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = DealOrangePrimary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "$${(99..199).random()}.99",
+                        fontSize = 12.sp,
+                        color = DealDarkGray,
+                        textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
+                    )
                 }
                 
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 
-                Text(
-                    text = item.quantity.toString().padStart(2, '0'),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                
-                Spacer(modifier = Modifier.width(12.dp))
-                
-                Card(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clickable { onIncrease() },
-                    shape = CircleShape,
-                    colors = CardDefaults.cardColors(
-                        containerColor = PharmacyGreenAccent
-                    )
+                // Quantity controls
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = "Increase",
-                            tint = Color.White,
-                            modifier = Modifier.size(16.dp)
+                    Card(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clickable {
+                                if (cartItem.quantity > 1) {
+                                    onQuantityChange(cartItem.quantity - 1)
+                                }
+                            },
+                        shape = CircleShape,
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (cartItem.quantity > 1) 
+                                DealOrangePrimary.copy(alpha = 0.1f) 
+                            else 
+                                DealLightGray
                         )
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Remove,
+                                contentDescription = "Decrease",
+                                tint = if (cartItem.quantity > 1) DealOrangePrimary else DealDarkGray,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.width(12.dp))
+                    
+                    Text(
+                        text = cartItem.quantity.toString(),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    
+                    Spacer(modifier = Modifier.width(12.dp))
+                    
+                    Card(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clickable {
+                                onQuantityChange(cartItem.quantity + 1)
+                            },
+                        shape = CircleShape,
+                        colors = CardDefaults.cardColors(
+                            containerColor = DealOrangePrimary.copy(alpha = 0.1f)
+                        )
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Add,
+                                contentDescription = "Increase",
+                                tint = DealOrangePrimary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
                     }
                 }
             }
             
             Spacer(modifier = Modifier.width(8.dp))
             
-            // Delete Button
+            // Remove button
             Card(
                 modifier = Modifier
-                    .size(36.dp)
-                    .scale(deleteScale)
-                    .clickable { 
-                        isDeletePressed = true
-                        onDelete()
+                    .size(40.dp)
+                    .clickable {
+                        isRemoving = true
+                        onRemove()
                     },
                 shape = CircleShape,
                 colors = CardDefaults.cardColors(
-                    containerColor = PharmacyError.copy(alpha = 0.1f)
+                    containerColor = DealError.copy(alpha = 0.1f)
                 )
             ) {
                 Box(
@@ -519,19 +716,19 @@ private fun CartItemRow(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Delete,
-                        contentDescription = "Delete",
-                        tint = PharmacyError,
-                        modifier = Modifier.size(18.dp)
+                        contentDescription = "Remove",
+                        tint = DealError,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
         }
     }
     
-    LaunchedEffect(isDeletePressed) {
-        if (isDeletePressed) {
-            delay(150)
-            isDeletePressed = false
+    LaunchedEffect(isRemoving) {
+        if (isRemoving) {
+            delay(100)
+            isRemoving = false
         }
     }
 } 

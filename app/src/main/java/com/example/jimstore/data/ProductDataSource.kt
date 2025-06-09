@@ -7,8 +7,8 @@ object ProductDataSource {
     val allProducts = listOf(
         Product(
             id = "paracetamol_1",
-            nameRes = R.string.paracetamol,
-            priceRes = R.string.lkr_250,
+            nameRes = R.string.beauty_deal,
+            priceRes = R.string.save_150,
             price = 250.0,
             imageRes = R.drawable.paracetamol,
             isFeatured = true,
@@ -16,83 +16,83 @@ object ProductDataSource {
         ),
         Product(
             id = "ibuprofen_1",
-            nameRes = R.string.ibuprofen,
-            priceRes = R.string.lkr_350,
+            nameRes = R.string.automotive_deal,
+            priceRes = R.string.save_180,
             price = 350.0,
             imageRes = R.drawable.ibuprofen,
             isFeatured = true
         ),
         Product(
             id = "amoxicillin_1",
-            nameRes = R.string.amoxicillin,
-            priceRes = R.string.lkr_750,
+            nameRes = R.string.books_deal,
+            priceRes = R.string.save_180,
             price = 750.0,
             imageRes = R.drawable.amoxicilin,
             isFeatured = true
         ),
         Product(
             id = "vitamin_c_1",
-            nameRes = R.string.vitamin_c,
-            priceRes = R.string.lkr_680,
+            nameRes = R.string.grocery_deal,
+            priceRes = R.string.save_150,
             price = 680.0,
             imageRes = R.drawable.vitaminc,
             isPopular = true
         ),
         Product(
             id = "omeprazole_1",
-            nameRes = R.string.omeprazole,
-            priceRes = R.string.lkr_950,
+            nameRes = R.string.electronics_deal,
+            priceRes = R.string.save_180,
             price = 950.0,
             imageRes = R.drawable.omeprazole,
             isPopular = true
         ),
         Product(
             id = "cetirizine_1",
-            nameRes = R.string.cetirizine,
-            priceRes = R.string.lkr_420,
+            nameRes = R.string.home_deal,
+            priceRes = R.string.save_350,
             price = 420.0,
             imageRes = R.drawable.cetirizine,
             isPopular = true
         ),
         Product(
             id = "multivitamin_1",
-            nameRes = R.string.multivitamin,
-            priceRes = R.string.lkr_1200,
+            nameRes = R.string.restaurant_deal,
+            priceRes = R.string.save_750,
             price = 1200.0,
             imageRes = R.drawable.dailymultivitamin
         ),
         Product(
             id = "aspirin_1",
-            nameRes = R.string.aspirin,
-            priceRes = R.string.lkr_180,
+            nameRes = R.string.tech_deal,
+            priceRes = R.string.save_950,
             price = 180.0,
             imageRes = R.drawable.aspirin
         ),
         Product(
             id = "calcium_1",
-            nameRes = R.string.calcium,
-            priceRes = R.string.lkr_850,
+            nameRes = R.string.travel_deal,
+            priceRes = R.string.save_950,
             price = 850.0,
             imageRes = R.drawable.calcium
         ),
         Product(
             id = "cough_syrup_1",
-            nameRes = R.string.cough_syrup,
-            priceRes = R.string.lkr_320,
+            nameRes = R.string.grocery_deal,
+            priceRes = R.string.save_180,
             price = 320.0,
             imageRes = R.drawable.cough_syrup
         ),
         Product(
             id = "bandage_1",
-            nameRes = R.string.bandage,
-            priceRes = R.string.lkr_150,
+            nameRes = R.string.fashion_deal,
+            priceRes = R.string.save_750,
             price = 150.0,
             imageRes = R.drawable.bandage
         ),
         Product(
             id = "thermometer_1",
-            nameRes = R.string.thermometer,
-            priceRes = R.string.lkr_1200,
+            nameRes = R.string.health_deal,
+            priceRes = R.string.save_750,
             price = 2500.0,
             imageRes = R.drawable.thermometer
         )

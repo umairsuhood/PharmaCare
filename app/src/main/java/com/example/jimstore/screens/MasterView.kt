@@ -215,12 +215,13 @@ fun MasterView(
                 }
             }
         }
-        navController?.let {
-        BottomNavBar(
-            modifier = Modifier.align(Alignment.BottomCenter),
-                navController = it,
+        // Only show BottomNavBar if both navController and cartViewModel are available
+        if (navController != null && cartViewModel != null) {
+            BottomNavBar(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                navController = navController,
                 cartViewModel = cartViewModel
-        )
+            )
         }
     }
 } 

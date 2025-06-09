@@ -1,132 +1,149 @@
 package com.example.jimstore.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.jimstore.navigation.Routes
+import com.example.jimstore.ui.theme.*
 import com.example.jimstore.viewmodel.CartViewModel
-import androidx.compose.foundation.clickable
 
 @Composable
 fun BottomNavBar(
-    modifier: Modifier = Modifier, 
-    navController: NavController? = null,
-    cartViewModel: CartViewModel? = null
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    cartViewModel: CartViewModel
 ) {
-    val nav = navController
-    val navBackStackEntry = nav?.currentBackStackEntryAsState()?.value
-    val currentRoute = navBackStackEntry?.destination?.route
-    val cartItemCount = cartViewModel?.getCartItemCount() ?: 0
+    var selectedTab by remember { mutableStateOf("home") }
+    val savedDealsCount by cartViewModel.cartItems.collectAsState()
 
-    val items = listOf(
-        Triple(Icons.Filled.Home, Routes.HOME, "Home"),
-        Triple(Icons.Filled.Search, Routes.PRODUCTS, "Products"),
-        Triple(Icons.Filled.ShoppingCart, Routes.CART, "Cart"),
-        Triple(Icons.Filled.Person, Routes.PROFILE, "Profile")
-    )
-    val selectedTab = items.indexOfFirst { it.second == currentRoute }.let { if (it == -1) 0 else it }
-
-    Surface(
+    Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(80.dp),
-        color = MaterialTheme.colorScheme.background,
-        shadowElevation = 8.dp
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
     ) {
         Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            items.forEachIndexed { index, item ->
-                BottomNavItem(
-                    icon = item.first,
-                    isSelected = selectedTab == index,
-                    showBadge = item.second == Routes.CART && cartItemCount > 0,
-                    badgeCount = cartItemCount,
-                    onClick = {
-                        if (nav != null && currentRoute != item.second) {
-                            nav.navigate(item.second) {
-                                launchSingleTop = true
-                                restoreState = true
-                                popUpTo(Routes.HOME) { saveState = true }
-                            }
-                        }
-                    }
-                )
-            }
+            // Home
+            BottomNavItem(
+                icon = Icons.Filled.Home,
+                label = "Home",
+                isSelected = selectedTab == "home",
+                onClick = {
+                    selectedTab = "home"
+                    navController.navigate("home")
+                }
+            )
+            
+            // Deals
+            BottomNavItem(
+                icon = Icons.Filled.LocalOffer,
+                label = "Deals",
+                isSelected = selectedTab == "deals",
+                onClick = {
+                    selectedTab = "deals"
+                    navController.navigate("products")
+                }
+            )
+
+            
+            // Saved Deals (previously Cart)
+            BottomNavItem(
+                icon = Icons.Filled.Bookmark,
+                label = "Saved",
+                isSelected = selectedTab == "saved",
+                badgeCount = savedDealsCount.size,
+                onClick = {
+                    selectedTab = "saved"
+                    navController.navigate("cart")
+                }
+            )
+            
+            // Profile
+            BottomNavItem(
+                icon = Icons.Filled.Person,
+                label = "Profile",
+                isSelected = selectedTab == "profile",
+                onClick = {
+                    selectedTab = "profile"
+                    navController.navigate("profile")
+                }
+            )
         }
     }
 }
 
 @Composable
 private fun BottomNavItem(
-    icon: ImageVector,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
     isSelected: Boolean,
-    showBadge: Boolean = false,
     badgeCount: Int = 0,
     onClick: () -> Unit
 ) {
-    val iconColor = if (isSelected) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
-    
-    Box(
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .size(48.dp)
-            .clip(RoundedCornerShape(24.dp))
-            .background(
-                if (isSelected) MaterialTheme.colorScheme.surfaceVariant
-                else Color.Transparent
-            )
-            .padding(12.dp)
-            .clickable { onClick() },
-        contentAlignment = Alignment.Center
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { onClick() }
+            .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = iconColor
-        )
-        
-        // Badge for cart items
-        if (showBadge) {
-            Box(
-                modifier = Modifier
-                    .size(16.dp)
-                    .background(Color.Red, CircleShape)
-                    .align(Alignment.TopEnd),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = if (badgeCount > 99) "99+" else badgeCount.toString(),
-                    color = Color.White,
-                    fontSize = 8.sp,
-                    fontWeight = FontWeight.Bold
-                )
+        Box {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = if (isSelected) DealOrangePrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(24.dp)
+            )
+            
+            // Badge for saved deals count
+            if (badgeCount > 0) {
+                Box(
+                    modifier = Modifier
+                        .size(18.dp)
+                        .background(DealHot, CircleShape)
+                        .align(Alignment.TopEnd),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (badgeCount > 99) "99+" else badgeCount.toString(),
+                        color = Color.White,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
+        
+        Spacer(modifier = Modifier.height(4.dp))
+        
+        Text(
+            text = label,
+            fontSize = 12.sp,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+            color = if (isSelected) DealOrangePrimary else MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 } 
